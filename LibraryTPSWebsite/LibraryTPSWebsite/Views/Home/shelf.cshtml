@@ -1,0 +1,93 @@
+﻿@model IEnumerable<LibraryTPSWebsite.Models.shelf>
+@{
+    ViewData["Title"] = "shedves";
+}
+<div class="container mt-5" style="margin-bottom:200px" >
+    <!-- Row for header and action button -->
+    <div class="row align-items-center text-black mb-3">
+        <h1 class="col-12 col-md-10 mb-3">List Of All Shelves in the Library</h1>
+        <div class="col-12 col-md-2 d-flex justify-content-end align-items-center">
+            <a asp-action="AddShelf" asp-controller="Home" class="btn btn-lg btn-primary w-100">Add Shelve</a>
+        </div>
+    </div>
+
+    <!--if statment-->
+    <div class="accordion  mb-5" id="accordionExample">
+        @if (TempData["AlertMessage"] != null)
+            {
+            <div class="alert alert-warning w-100 alert-dismissible fade show mt-5" role="alert">
+                @TempData["AlertMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            }
+        @if (Model != null && Model.Any())
+            {
+            foreach (var shelf in Model)
+                {
+
+                @if (shelf.IsDeleted == false)
+                    {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header d-flex justify-content-between align-items-center" id="headingOne">
+                            <button class="accordion-button fw-bold fs-5 flex-grow-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(shelf.shelfID)" aria-expanded="true" aria-controls="collapse@(shelf.shelfID)">
+                                <div class="w-50">
+                                    @shelf.Name
+                                </div>
+                                <div class="w-50 d-flex justify-content-end me-2" style="z-index:100">
+                                    <a asp-action="UpdateShelf" asp-controller="home" asp-route-id="@shelf.shelfID" class="btn btn-warning me-2"><i class="fa fa-edit"></i></a>
+                                    <a asp-action="SoftDelete" asp-controller="home" asp-route-id="@shelf.shelfID" class="btn btn-danger me-2"><i class="fa fa-trash"></i></a>
+                                </div>
+                            </button>
+
+                        </h2>
+                        <div id="collapse@(shelf.shelfID)" class="accordion-collapse collapse" aria-labelledby="heading@(shelf.shelfID)" data-bs-parent="#accordionExample">
+                            <div class="row align-items-center text-black mb-3 mt-3 p-4" >
+                                <h3 class="col-12 col-md-10 mb-3">Create New Book In @shelf.Name shelve</h3>
+                                <div class="col-12 col-md-2 d-flex justify-content-end align-items-center">
+                                    <a asp-action="AddBook" asp-controller="Home" asp-route-id="@shelf.shelfID" class="btn btn-success w-100">Add Book</a>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                @if (shelf.books != null && shelf.books.Any())
+                                    {
+                                    foreach (var book in shelf.books)
+                                        {
+                                        if (book.IsDeleted == false)
+                                            {
+                                            <div class="col-md-12">
+                                                <div class="row g-0 border rounded overflow-hidden flex-md-row shadow-sm h-md-250 position-relative">
+                                                    <div class="col p-4 d-flex flex-column position-static">
+                                                        <h3 class="mb-0">@book.BookName</h3>
+                                                        <div class="mb-1 text-muted">@book.CreationDate</div>
+                                                        <p class="card-text mb-auto">@book.Title.</p>
+                                                        <div class="d-flex justify-content-start align-items-center gap-2">
+                                                            <a asp-action="UpdateBook" asp-controller="home" asp-route-id="@book.BookID" class=" btn btn-warning"><i class="fa fa-edit"></i></a>
+                                                            <a asp-action="SoftDeleteBook" asp-controller="home" asp-route-id="@book.BookID" class=" btn btn-danger"><i class="fa fa-trash"></i></a>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-auto d-none d-lg-block">
+                                                        <img class="bd-placeholder-img" src="~/Image/@book.PhotoUrl" width="200" height="250" aria-label="Placeholder: Thumbnail">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            }
+                                        }
+
+                                    }
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                }
+            }
+        else
+            {
+            <div class="alert fs-5 alert-warning mt-4" role="alert">
+                No shelves found in the library.
+            </div>
+            }
+    </div>
+</div>
